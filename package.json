@@ -1,0 +1,39 @@
+{
+  "name": "unforgiven-love",
+  "version": "1.0.0",
+  "description": "The Unforgiven — Forensic Forgiveness for the Things You Can't Let Go",
+  "type": "module",
+  "homepage": "https://unforgiven.love",
+  "scripts": {
+    "dev": "node server/index.mjs",
+    "build": "vite build --outDir dist/client && vite build --ssr src/entry-server.tsx --outDir dist/server",
+    "start": "NODE_ENV=production node scripts/start-with-cron.mjs",
+    "generate": "node scripts/generate-articles.mjs"
+  },
+  "keywords": ["forgiveness", "healing", "consciousness"],
+  "author": "The Unforgiven Editorial",
+  "license": "ISC",
+  "engines": {
+    "node": ">=18"
+  },
+  "packageManager": "pnpm@10.32.1",
+  "dependencies": {
+    "compression": "^1.8.1",
+    "express": "^5.2.1",
+    "helmet": "^8.1.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "react-router-dom": "^7.13.2",
+    "sharp": "^0.34.5"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.5.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "typescript": "^6.0.2",
+    "vite": "^8.0.3",
+    "vite-plugin-ssr": "^0.4.142"
+  }
+}
