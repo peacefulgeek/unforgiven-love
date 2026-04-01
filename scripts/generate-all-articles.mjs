@@ -101,7 +101,7 @@ const NICHE_REFERENCES = [
 ];
 
 const SPIRITUAL_REFERENCES = [
-  { name: 'Jiddu Krishnamurti', field: 'observation without the observer', usage: 'Krishnamurti would say that the very act of naming the resentment gives it power — observation without labeling is the beginning of release' },
+  { name: 'Jiddu K.', field: 'observation without the observer', usage: 'Jiddu K. would say that the very act of naming the resentment gives it power — observation without labeling is the beginning of release' },
   { name: 'Alan Watts', field: 'Eastern philosophy for Western minds', usage: 'As Watts observed, trying to forgive is like trying to be spontaneous — the effort defeats the purpose' },
   { name: 'Sam Harris', field: 'secular mindfulness and neuroscience', usage: 'Harris points out that the self who holds the grudge is itself a construction — look closely and the grudge-holder dissolves' },
   { name: 'Sadhguru', field: 'yoga and consciousness', usage: 'Sadhguru teaches that karma is not punishment but unfinished business — unforgiveness is karma you\'re choosing to carry' },

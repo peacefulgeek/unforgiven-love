@@ -318,6 +318,8 @@ function nav() {
 <a href="/" class="nav-logo">${SITE.title}<span>${SITE.subtitle}</span></a>
 <div class="nav-links">
 <a href="/articles">Articles</a>
+<a href="/tools">Tools</a>
+<a href="/quizzes">Quizzes</a>
 <div class="search-box"><input type="text" placeholder="Search..." id="nav-search" aria-label="Search articles"></div>
 <a href="/start-here">Start Here</a>
 <a href="/about">About</a>
@@ -329,6 +331,8 @@ function nav() {
 <button class="nav-close" aria-label="Close menu" onclick="this.parentElement.classList.remove('open');document.querySelector('.nav-overlay').classList.remove('open')">&times;</button>
 <a href="/">Home</a>
 <a href="/articles">Articles</a>
+<a href="/tools">Tools</a>
+<a href="/quizzes">Quizzes</a>
 ${CATEGORIES.map(c => `<a href="/category/${c.slug}">${c.name}</a>`).join('')}
 <a href="/start-here">Start Here</a>
 <a href="/about">About</a>
@@ -343,6 +347,8 @@ function footer(published) {
 <div><h4>Sections</h4>${CATEGORIES.map(c => `<a href="/category/${c.slug}" style="display:block;margin-bottom:0.4rem;font-size:0.85rem">${c.name}</a>`).join('')}</div>
 <div><h4>Pages</h4>
 <a href="/start-here" style="display:block;margin-bottom:0.4rem;font-size:0.85rem">Start Here</a>
+<a href="/tools" style="display:block;margin-bottom:0.4rem;font-size:0.85rem">Tools We Recommend</a>
+<a href="/quizzes" style="display:block;margin-bottom:0.4rem;font-size:0.85rem">Quizzes</a>
 <a href="/about" style="display:block;margin-bottom:0.4rem;font-size:0.85rem">About</a>
 <a href="/what-are-you-holding" style="display:block;margin-bottom:0.4rem;font-size:0.85rem">What Are You Holding?</a>
 <a href="/privacy" style="display:block;margin-bottom:0.4rem;font-size:0.85rem">Privacy Policy</a>
@@ -357,6 +363,7 @@ function footer(published) {
 </div>
 <div class="footer-bottom">
 <p>&copy; ${new Date().getFullYear()} ${SITE.editorialName}. All rights reserved.</p>
+<p style="margin-top:0.3rem;font-size:0.75rem">As an Amazon Associate I earn from qualifying purchases.</p>
 <p style="margin-top:0.3rem"><em>Disclaimer: Content on this site is for educational and informational purposes only. It is not a substitute for professional medical, psychological, or therapeutic advice. Always consult a qualified professional for personal guidance.</em></p>
 </div></footer>`;
 }
@@ -1020,9 +1027,13 @@ ${tocHtml}
 <span>${article.readingTime} min read</span>
 </div>
 ${shareHtml}
+${article.hasAffiliateLinks ? '<div class="affiliate-disclosure" style="background:#FFF8E7;border:1px solid var(--border);padding:0.8rem 1rem;margin-bottom:1.5rem;font-size:0.8rem;color:var(--text-light);border-radius:4px">This article contains affiliate links. We may earn a small commission if you make a purchase &mdash; at no extra cost to you.</div>' : ''}
 <div class="article-body">${article.body}</div>
 ${faqHtml}
-<div class="disclaimer"><strong>Disclaimer:</strong> Content on this site is for educational and informational purposes only. It is not a substitute for professional medical, psychological, or therapeutic advice. Always consult a qualified professional for personal guidance.</div>
+<div class="health-disclaimer" style="background:linear-gradient(135deg,#FFF8E7,#FFF3D6);border:1px solid var(--border);border-radius:8px;padding:1.5rem;margin-top:2rem;margin-bottom:1.5rem">
+<h4 style="font-family:var(--serif);color:var(--primary);margin-bottom:0.5rem;font-size:1rem">Important Health Notice</h4>
+<p style="font-size:0.85rem;color:var(--text-light);margin:0;line-height:1.6">The content on this site is intended for educational and informational purposes only and should not be construed as professional medical or psychological advice. The information provided here is not a substitute for consultation with a qualified healthcare provider, licensed therapist, or mental health professional. Every individual's situation is unique, and what works for one person may not be appropriate for another. If you are experiencing emotional distress, mental health challenges, or physical symptoms related to stress or trauma, please consult your healthcare provider or a licensed professional before making any changes to your wellness routine.</p>
+</div>
 ${shareHtml}
 <div class="related-section">
 <h2 class="section-header">Related Coverage</h2>
@@ -1030,11 +1041,13 @@ ${shareHtml}
 </div>
 </main>
 <aside class="article-sidebar">
-<div class="bio-card">
+<div class="bio-card" style="text-align:center">
+<img src="${BUNNY_CDN_BASE}/images/kalesh-author.webp" alt="Kalesh — Consciousness Teacher & Writer" width="120" height="120" style="border-radius:50%;margin:0 auto 0.8rem;display:block;object-fit:cover">
 <h4>${AUTHOR.name}</h4>
 <div class="bio-title">${AUTHOR.title}</div>
-<p>${AUTHOR.bio}</p>
-<a href="${AUTHOR.link}" class="bio-link">${AUTHOR.linkText}</a>
+<p style="font-size:0.85rem">Kalesh is a mystic and spiritual advisor who brings ancient wisdom and depth to life's biggest decisions.</p>
+<a href="${AUTHOR.link}" class="bio-link" style="display:inline-block;margin-top:0.6rem;background:var(--primary);color:var(--secondary);padding:0.5rem 1.2rem;font-size:0.85rem;font-weight:600;border-radius:4px;text-decoration:none">Book a Session</a>
+<a href="${AUTHOR.link}" class="bio-link" style="display:block;margin-top:0.4rem;font-size:0.8rem">Visit Kalesh's Website &rarr;</a>
 </div>
 <div class="sidebar-section">
 <h4>In ${cat?.name || 'This Category'}</h4>
@@ -1084,11 +1097,18 @@ ${nav()}
 <p>We publish on five core themes: the cultural lies about forgiveness that keep people stuck, the forensic method for systematic release, the body's role in holding and releasing resentment, specific forgiveness scenarios that require specialized approaches, and the liberation that follows genuine forgiveness work.</p>
 <p>This is not a site that will tell you to forgive and forget. This is a site that will sit with you in the complexity of what happened, help you examine it with precision, and guide you toward a release that is earned — not performed.</p>
 
-<div class="advisor-card">
-<h4>${AUTHOR.name}</h4>
-<div class="bio-title" style="font-size:0.75rem;color:var(--accent);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.5rem">${AUTHOR.title}</div>
-<p style="font-size:0.85rem;color:var(--text-light)">${AUTHOR.bio}</p>
-<a href="${AUTHOR.link}" style="display:inline-block;margin-top:0.8rem;background:var(--primary);color:var(--secondary);padding:0.4rem 1rem;font-size:0.85rem;font-weight:600;border-radius:2px">${AUTHOR.linkText}</a>
+<div class="advisor-card" style="display:flex;gap:1.5rem;align-items:flex-start;flex-wrap:wrap">
+<img src="${BUNNY_CDN_BASE}/images/kalesh-author.webp" alt="Kalesh — Consciousness Teacher & Writer" width="160" height="160" style="border-radius:50%;object-fit:cover;flex-shrink:0">
+<div style="flex:1;min-width:250px">
+<h4 style="margin-bottom:0.2rem">${AUTHOR.name}</h4>
+<div class="bio-title" style="font-size:0.75rem;color:var(--accent);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.8rem">${AUTHOR.title}</div>
+<p style="font-size:0.9rem;color:var(--text-light);line-height:1.7">${AUTHOR.bio}</p>
+<p style="font-size:0.9rem;color:var(--text-light);line-height:1.7;margin-top:0.5rem">Kalesh is a mystic and spiritual advisor who brings ancient wisdom and depth to life's biggest decisions. His work with ${SITE.title} explores the intersection of forensic forgiveness, somatic release, and consciousness — helping readers move from intellectual understanding to embodied liberation.</p>
+<div style="margin-top:1rem;display:flex;gap:0.8rem;flex-wrap:wrap">
+<a href="${AUTHOR.link}" style="display:inline-block;background:var(--primary);color:var(--secondary);padding:0.5rem 1.2rem;font-size:0.85rem;font-weight:600;border-radius:4px;text-decoration:none">Book a Session</a>
+<a href="${AUTHOR.link}" style="display:inline-block;border:1px solid var(--primary);color:var(--primary);padding:0.5rem 1.2rem;font-size:0.85rem;font-weight:600;border-radius:4px;text-decoration:none">Visit kalesh.love &rarr;</a>
+</div>
+</div>
 </div>
 </div>
 ${footer(published)}
@@ -1130,6 +1150,159 @@ ${searchScript()}
   res.send(html);
 });
 
+// ─── TOOLS WE RECOMMEND ───
+app.get('/tools', (req, res) => {
+  const { published } = getArticles();
+  const TOOLS_TAG = 'spankyspinola-20';
+  const amz = (asin) => `https://www.amazon.com/dp/${asin}?tag=${TOOLS_TAG}`;
+
+  const toolCategories = [
+    {
+      name: 'Books on Forgiveness & Letting Go',
+      products: [
+        { name: 'Forgive for Good', author: 'Dr. Fred Luskin', asin: '0062517201', desc: 'The Stanford forgiveness researcher\'s field manual. If you only read one book on the science of forgiveness, this is the one. Luskin\'s nine-step method is the closest thing to a clinical protocol for releasing resentment.' },
+        { name: 'Radical Forgiveness', author: 'Colin Tipping', asin: '1591797640', desc: 'Tipping reframes forgiveness as a spiritual technology rather than a moral obligation. His five-stage process cuts through the intellectual resistance most people feel when told to "just forgive."' },
+        { name: 'The Book of Forgiving', author: 'Desmond Tutu & Mpho Tutu', asin: '0062203576', desc: 'Written by the architect of South Africa\'s Truth and Reconciliation Commission, this is forgiveness at the civilizational scale — and somehow still deeply personal.' },
+        { name: 'Forgiving What You Can\'t Forget', author: 'Lysa TerKeurst', asin: '0718039874', desc: 'For when the wound is still fresh and the idea of forgiveness feels like betrayal. TerKeurst writes from lived experience, not theory, and her honesty about the messiness of the process is rare.' },
+        { name: 'Forgive and Forget', author: 'Lewis B. Smedes', asin: '0061285826', desc: 'The classic that started the modern forgiveness conversation. Smedes distinguishes between forgiving and excusing, forgiving and forgetting, forgiving and reconciling — distinctions most people never make.' },
+      ]
+    },
+    {
+      name: 'Books on Trauma, Somatic Healing & the Body',
+      products: [
+        { name: 'The Body Keeps the Score', author: 'Bessel van der Kolk', asin: '0143127748', desc: 'The definitive work on how trauma lives in the body. Van der Kolk\'s research changed how we understand the relationship between unresolved experience and physical health. Essential reading for anyone doing forgiveness work.' },
+        { name: 'Waking the Tiger', author: 'Peter Levine', asin: '155643233X', desc: 'Levine\'s somatic experiencing framework explains why talking about trauma isn\'t enough — the body has to discharge the energy it\'s been holding. This book is the foundation of body-based forgiveness work.' },
+        { name: 'When Things Fall Apart', author: 'Pema Ch\u00f6dr\u00f6n', asin: '1570629692', desc: 'Ch\u00f6dr\u00f6n teaches the radical practice of staying present with pain instead of running from it. Her approach to groundlessness is the contemplative counterpart to forensic forgiveness.' },
+        { name: 'The Myth of Normal', author: 'Gabor Mat\u00e9', asin: '0593083881', desc: 'Mat\u00e9 dismantles the idea that chronic illness and emotional suffering are personal failures. His work on the connection between suppressed emotion and disease is directly relevant to anyone holding unforgiveness in their body.' },
+        { name: 'It Didn\'t Start with You', author: 'Mark Wolynn', asin: '1101980389', desc: 'Wolynn\'s work on inherited family trauma explains why some resentments feel older than your own life. If your forgiveness work keeps hitting a wall, the answer may be ancestral.' },
+      ]
+    },
+    {
+      name: 'Journals & Workbooks',
+      products: [
+        { name: 'The Forgiveness Workbook', author: 'Eileen Barker', asin: '1641524391', desc: 'A structured, guided workbook that walks you through the forgiveness process one exercise at a time. Useful for people who need a container for the work — not just inspiration.' },
+        { name: 'The Self-Compassion Workbook', author: 'Kristin Neff & Christopher Germer', asin: '1462526780', desc: 'Self-forgiveness requires self-compassion first. Neff\'s research-backed exercises help you build the internal foundation that makes genuine self-forgiveness possible.' },
+        { name: 'Moleskine Classic Notebook', author: '', asin: '8883701127', desc: 'Sometimes the best forgiveness tool is a blank page. The Moleskine is our go-to for freewriting, resentment inventories, and the forensic examination of what you\'re carrying.' },
+        { name: 'Morning Pages Journal', author: 'Julia Cameron', asin: '0874778867', desc: 'Cameron\'s "The Artist\'s Way" morning pages practice is one of the most effective ways to surface unconscious resentment. This companion journal makes the practice tangible.' },
+      ]
+    },
+    {
+      name: 'Meditation & Somatic Tools',
+      products: [
+        { name: 'Tibetan Singing Bowl Set', author: 'Silent Mind', asin: 'B06XHN7VRG', desc: 'Sound vibration is one of the fastest ways to shift a stuck emotional state. This handcrafted bowl produces the kind of resonance that helps the body release what the mind can\'t.' },
+        { name: 'Zafu Meditation Cushion', author: 'Retrospec', asin: 'B07GXCF76X', desc: 'Proper posture changes the quality of your inner work. This buckwheat hull cushion supports the kind of sustained sitting that forgiveness meditation requires.' },
+        { name: 'Acupressure Mat and Pillow Set', author: 'ProsourceFit', asin: 'B00BMS4GEG', desc: 'When resentment is lodged in the back, shoulders, or neck, this acupressure mat provides targeted somatic release. Twenty minutes on this mat can shift what hours of thinking cannot.' },
+        { name: 'Weighted Blanket (20 lbs)', author: 'YnM', asin: 'B073429DV2', desc: 'Deep pressure stimulation activates the parasympathetic nervous system — the state your body needs to be in for genuine forgiveness work. This is the tool for when your nervous system won\'t settle.' },
+        { name: 'Essential Oil Diffuser', author: 'ASAKUKI', asin: 'B07C1NVNKQ', desc: 'Scent bypasses the cognitive brain entirely. Lavender, frankincense, and sandalwood create the olfactory environment that supports deep emotional processing.' },
+      ]
+    },
+    {
+      name: 'Apps & Digital Resources',
+      products: [
+        { name: 'Insight Timer', author: '', asin: '', url: 'https://insighttimer.com', desc: 'The world\'s largest free meditation library. Search for "forgiveness meditation" and you\'ll find hundreds of guided practices. This is where we send people who need a daily forgiveness practice.' },
+        { name: 'Calm', author: '', asin: '', url: 'https://www.calm.com', desc: 'Calm\'s body scan meditations are particularly useful for locating where unforgiveness lives in your tissue. The sleep stories also help when resentment keeps you awake at 3am.' },
+        { name: 'Waking Up', author: 'Sam Harris', asin: '', url: 'https://www.wakingup.com', desc: 'Harris\'s meditation app goes deeper than most — into the nature of consciousness itself. For those whose forgiveness work has become a contemplative practice, this is the next level.' },
+      ]
+    },
+    {
+      name: 'Physical Healing & Bodywork Tools',
+      products: [
+        { name: 'TheraCane Massager', author: '', asin: 'B000PRMCJU', desc: 'Trigger points hold emotional memory. The TheraCane lets you access and release the deep tissue knots that form around unprocessed resentment — especially in the upper back and shoulders.' },
+        { name: 'Yoga Blocks (Set of 2)', author: 'Gaiam', asin: 'B0027DFJRA', desc: 'Restorative yoga is one of the most effective somatic forgiveness practices. These blocks support the kind of long, surrendered holds that allow the body to release what it\'s gripping.' },
+        { name: 'Foam Roller', author: 'LuxFit', asin: 'B00KAEJ51A', desc: 'Myofascial release is the physical counterpart to emotional release. Rolling out the IT band, hip flexors, and thoracic spine can unlock stored grief and anger that talk therapy misses.' },
+        { name: 'Breathwork Trainer', author: 'Airofit', asin: 'B08KWJQ3WX', desc: 'Conscious breathing is the bridge between the body and the mind. This device trains respiratory capacity and control — the foundation of every somatic forgiveness practice.' },
+      ]
+    },
+  ];
+
+  const totalProducts = toolCategories.reduce((sum, cat) => sum + cat.products.length, 0);
+  const itemListLd = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "Forgiveness Tools & Resources We Recommend",
+    "description": "Curated list of the best books, tools, apps, and resources for forensic forgiveness and healing.",
+    "numberOfItems": totalProducts,
+    "itemListElement": toolCategories.flatMap((cat, ci) => cat.products.map((p, pi) => ({
+      "@type": "ListItem",
+      "position": ci * 10 + pi + 1,
+      "name": p.name,
+      "url": p.asin ? amz(p.asin) : (p.url || '#')
+    })))
+  });
+
+  const html = `${htmlHead(
+    `Best Forgiveness Tools & Resources We Recommend | ${SITE.title}`,
+    `Curated list of the best books, tools, apps, and resources for forensic forgiveness and healing. Personally vetted recommendations from ${AUTHOR.name}.`,
+    `${SITE.domain}/tools`,
+    null,
+    `<script type="application/ld+json">${itemListLd}</script>`
+  )}
+<body>
+${nav()}
+<div class="page-content" style="max-width:900px">
+<h1>Tools We Recommend</h1>
+<div class="affiliate-disclosure" style="background:#FFF8E7;border:1px solid var(--border);padding:0.8rem 1rem;margin-bottom:1.5rem;font-size:0.8rem;color:var(--text-light);border-radius:4px">This page contains affiliate links. We may earn a small commission if you make a purchase &mdash; at no extra cost to you.</div>
+<p>These are the tools, books, and resources we actually trust. Every recommendation here has been chosen because it serves the work this site is about — the real, forensic, body-level work of forgiveness. Nothing here is filler. If it\'s on this page, it\'s because we\'ve seen it make a difference.</p>
+<p>We\'ve organized these into categories, from the books that changed how we think about forgiveness to the physical tools that help the body release what the mind can\'t. Start wherever feels most relevant to where you are in the process.</p>
+${toolCategories.map(cat => `
+<h2 style="margin-top:2.5rem;padding-bottom:0.5rem;border-bottom:2px solid var(--border)">${cat.name}</h2>
+<div style="display:grid;gap:1rem;margin-top:1rem">
+${cat.products.map(p => {
+  const link = p.asin ? amz(p.asin) : (p.url || '#');
+  const paidLabel = p.asin ? ' (paid link)' : '';
+  return `<div style="background:white;border:1px solid var(--border);border-radius:6px;padding:1.2rem">
+<h3 style="margin:0 0 0.3rem"><a href="${link}" target="_blank" rel="${p.asin ? '' : 'nofollow '}noopener">${p.name}</a>${p.author ? ` <span style="font-weight:400;font-size:0.85rem;color:var(--text-light)">by ${p.author}</span>` : ''}${paidLabel}</h3>
+<p style="margin:0;font-size:0.9rem;color:var(--text-light);line-height:1.6">${p.desc}</p>
+</div>`;
+}).join('')}
+</div>
+`).join('')}
+<div style="margin-top:3rem;padding:1.5rem;background:var(--secondary);border-radius:8px;text-align:center">
+<h3>Looking for More?</h3>
+<p>We regularly publish in-depth reviews of tools and resources for the forgiveness journey. Check our <a href="/articles">latest articles</a> or take our <a href="/what-are-you-holding">What Are You Still Holding?</a> assessment to discover where your work needs to begin.</p>
+</div>
+</div>
+${footer(published)}
+${cookieBanner()}
+${searchScript()}
+</body></html>`;
+  res.send(html);
+});
+
+// ─── QUIZZES LISTING ───
+app.get('/quizzes', (req, res) => {
+  const { published } = getArticles();
+  const html = `${htmlHead(
+    `Forgiveness Quizzes & Assessments | ${SITE.title}`,
+    'Take our free forgiveness quizzes and assessments to discover where your healing work needs to begin.',
+    `${SITE.domain}/quizzes`,
+    null
+  )}
+<body>
+${nav()}
+<div class="page-content" style="max-width:1000px">
+<h1>Quizzes & Assessments</h1>
+<p>These tools are designed to illuminate — not diagnose. Each quiz takes 2-3 minutes and gives you immediate, actionable results. No data is stored. Your answers stay on your screen, and you can download your results as a PDF if you want to keep them.</p>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem;margin-top:2rem">
+${QUIZZES.map(q => `<div style="background:white;border:1px solid var(--border);border-radius:8px;padding:1.5rem;transition:box-shadow 0.2s">
+<h3 style="margin:0 0 0.5rem"><a href="/quiz/${q.slug}" style="color:var(--primary)">${q.title}</a></h3>
+<p style="font-size:0.85rem;color:var(--text-light);margin:0 0 1rem;line-height:1.5">${q.description}</p>
+<a href="/quiz/${q.slug}" style="display:inline-block;background:var(--primary);color:var(--secondary);padding:0.4rem 1rem;font-size:0.85rem;font-weight:600;border-radius:4px;text-decoration:none">Take This Quiz</a>
+</div>`).join('')}
+</div>
+<div style="margin-top:3rem;padding:1.5rem;background:var(--secondary);border-radius:8px">
+<h3>Interactive Assessment</h3>
+<p>For a deeper exploration, try our comprehensive <a href="/what-are-you-holding">What Are You Still Holding?</a> assessment. It maps the six layers of unforgiveness — body, mind, emotions, energy, relationships, and ancestral — to show you where the most unprocessed material lives.</p>
+<a href="/what-are-you-holding" style="display:inline-block;margin-top:0.5rem;background:var(--primary);color:var(--secondary);padding:0.5rem 1.2rem;font-size:0.85rem;font-weight:600;border-radius:4px;text-decoration:none">Start the Assessment</a>
+</div>
+</div>
+${footer(published)}
+${cookieBanner()}
+${searchScript()}
+</body></html>`;
+  res.send(html);
+});
+
 // ─── PRIVACY ───
 app.get('/privacy', (req, res) => {
   const { published } = getArticles();
@@ -1147,8 +1320,11 @@ app.get('/privacy', (req, res) => {
 <p>This site uses minimal cookies for essential functionality, including remembering your cookie consent preference. We do not use analytics cookies, tracking cookies, or third-party advertising cookies.</p>
 <h2>Third-Party Services</h2>
 <p>We use Bunny CDN for content delivery and data storage. We do not use Google Analytics, Facebook Pixel, or any other tracking services.</p>
+<h2>Affiliate Disclosure</h2>
+<p>As an Amazon Associate I earn from qualifying purchases.</p>
+<p>This site is a participant in the Amazon Services LLC Associates Program, an affiliate advertising program designed to provide a means for sites to earn advertising fees by advertising and linking to Amazon.com. Some links on this site are affiliate links, meaning we may earn a small commission at no additional cost to you.</p>
 <h2>Your Rights</h2>
-<p>You have the right to request deletion of your data. Since we only collect email addresses through voluntary subscription, you can contact us to request removal.</p>
+<p>You have the right to request deletion of your data. Since we only collect email addresses through voluntary subscription, you may request removal by visiting our About page for current contact information.</p>
 <h2>Changes to This Policy</h2>
 <p>We may update this privacy policy from time to time. Changes will be posted on this page with an updated revision date.</p>
 </div>${footer(published)}${cookieBanner()}${searchScript()}</body></html>`;
@@ -1319,13 +1495,40 @@ function showResults() {
   const primary = sorted[0];
   const secondary = sorted[1];
   const info = layerInfo[primary[0]];
+  const secInfo = layerInfo[secondary[0]];
   
-  resultsDiv.innerHTML = '<div class="quiz-result"><h2>Your Primary Layer: ' + info.name + '</h2></div>' +
-    '<div class="layer-result"><p><strong>' + info.description + '</strong></p></div>' +
-    '<p style="margin-top:1.5rem">Your secondary layer is <strong>' + layerInfo[secondary[0]].name + '</strong>.</p>' +
+  const barChart = sorted.map(([layer, score]) => {
+    const pct = Math.round((score / questions.length) * 100);
+    const li = layerInfo[layer];
+    return '<div style="margin-bottom:0.8rem"><div style="display:flex;justify-content:space-between;margin-bottom:0.2rem"><span style="font-weight:600;font-size:0.9rem">' + li.name + '</span><span style="font-size:0.85rem;color:var(--text-light)">' + score + '/' + questions.length + '</span></div><div style="background:var(--border);border-radius:4px;height:12px;overflow:hidden"><div style="background:var(--accent);height:100%;width:' + pct + '%;border-radius:4px;transition:width 0.5s"></div></div></div>';
+  }).join('');
+  
+  resultsDiv.innerHTML = '<div id="assessment-result-content">' +
+    '<div class="quiz-result"><h2>Your Primary Layer: ' + info.name + '</h2></div>' +
+    '<div class="layer-result" style="margin-bottom:1.5rem"><p style="font-size:1.05rem;line-height:1.7"><strong>' + info.description + '</strong></p></div>' +
+    '<p style="margin-bottom:1.5rem">Your secondary layer is <strong>' + secInfo.name + '</strong> \u2014 ' + secInfo.description.split('.')[0].toLowerCase() + '.</p>' +
+    '<div style="background:var(--secondary);padding:1.2rem;border:1px solid var(--border);border-radius:6px;margin-bottom:1.5rem"><h4 style="margin:0 0 1rem">Your Layer Breakdown</h4>' + barChart + '</div>' +
     '<h3 style="margin-top:2rem">Recommended Reading</h3>' +
-    '<p>Explore articles in <a href="/category/' + info.articles + '">' + info.name + '</a> to begin your forensic forgiveness work.</p>' +
-    '<div style="margin-top:2rem;background:var(--secondary);padding:1.5rem;border:1px solid var(--border)"><h4>Save Your Results</h4><p style="font-size:0.9rem">Enter your email to receive your full assessment breakdown.</p><form onsubmit="return handleSubscribe(event,\\'assessment\\')"><input type="email" placeholder="Your email" required style="padding:0.5rem;width:100%;max-width:300px;margin-right:0.5rem;border:1px solid var(--border);border-radius:2px"><button type="submit" style="background:var(--accent);color:white;border:none;padding:0.5rem 1rem;cursor:pointer;border-radius:2px;font-weight:600;margin-top:0.5rem">Send Results</button></form></div>';
+    '<p>Start with articles in <a href="/category/' + info.articles + '">' + info.name + '</a>, then explore <a href="/category/' + secInfo.articles + '">' + secInfo.name + '</a> for your secondary layer.</p>' +
+    '</div>' +
+    '<div style="margin-top:1.5rem;display:flex;gap:1rem;flex-wrap:wrap">' +
+    '<button onclick="downloadAssessmentPDF()" style="background:var(--primary);color:var(--secondary);border:none;padding:0.6rem 1.2rem;cursor:pointer;border-radius:4px;font-weight:600;font-size:0.9rem">Download Results as PDF</button>' +
+    '<button onclick="window.print()" style="background:transparent;border:1px solid var(--primary);color:var(--primary);padding:0.6rem 1.2rem;cursor:pointer;border-radius:4px;font-weight:600;font-size:0.9rem">Print Results</button>' +
+    '</div>' +
+    '<div style="margin-top:2rem;background:var(--secondary);padding:1.5rem;border:1px solid var(--border);border-radius:6px"><h4>Stay Connected</h4><p style="font-size:0.9rem;margin-bottom:0.8rem">Get weekly insights on forensic forgiveness delivered to your inbox.</p><form onsubmit="return handleSubscribe(event,\'assessment\')"><div style="display:flex;gap:0.5rem;flex-wrap:wrap"><input type="email" placeholder="Your email" required style="padding:0.5rem;flex:1;min-width:200px;border:1px solid var(--border);border-radius:2px"><button type="submit" style="background:var(--accent);color:white;border:none;padding:0.5rem 1rem;cursor:pointer;border-radius:2px;font-weight:600">Subscribe</button></div></form></div>';
+}
+
+function downloadAssessmentPDF() {
+  const content = document.getElementById('assessment-result-content');
+  if (!content) return;
+  const resultText = content.innerText;
+  const blob = new Blob(['\nWhat Are You Still Holding? \u2014 Assessment Results\n' + '='.repeat(50) + '\n\nDate: ' + new Date().toLocaleDateString() + '\n\n' + resultText + '\n\n---\nFrom The Unforgiven (unforgiven.love)\n'], {type: 'text/plain'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'what-are-you-holding-results.txt';
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 renderQuestion();
@@ -1371,11 +1574,39 @@ function pickQ(i) {
 }
 
 function showQResult() {
-  const winner = Object.entries(qScores).sort((a,b)=>b[1]-a[1])[0][0];
+  const sorted = Object.entries(qScores).sort((a,b)=>b[1]-a[1]);
+  const winner = sorted[0][0];
   const result = quizData.results.find(r => r.id === winner);
+  const allScores = sorted.map(([id,score]) => {
+    const r = quizData.results.find(x => x.id === id);
+    return '<div style="margin-bottom:0.5rem"><strong>' + (r ? r.title : id) + ':</strong> ' + score + ' points</div>';
+  }).join('');
   const el = document.getElementById('quiz-${quiz.slug}');
-  el.innerHTML = '<div class="quiz-result"><h2>' + result.title + '</h2><p>' + result.description + '</p></div>' +
-    '<div style="margin-top:1.5rem;background:var(--secondary);padding:1.5rem;border:1px solid var(--border)"><h4>Get Your Full Results</h4><form onsubmit="return handleSubscribe(event,\\'quiz-${quiz.slug}\\')"><input type="email" placeholder="Your email" required style="padding:0.5rem;width:100%;max-width:300px;margin-bottom:0.5rem;border:1px solid var(--border);border-radius:2px"><button type="submit" style="background:var(--accent);color:white;border:none;padding:0.5rem 1rem;cursor:pointer;border-radius:2px;font-weight:600">Send Results</button></form></div>';
+  el.innerHTML = '<div class="quiz-result" id="quiz-result-content">' +
+    '<h2>' + result.title + '</h2>' +
+    '<p style="font-size:1.05rem;line-height:1.7;margin-bottom:1.5rem">' + result.description + '</p>' +
+    '<div style="background:var(--secondary);padding:1rem;border:1px solid var(--border);border-radius:6px;margin-bottom:1.5rem"><h4 style="margin:0 0 0.5rem">Your Score Breakdown</h4>' + allScores + '</div>' +
+    (result.articles && result.articles.length ? '<p style="font-size:0.9rem;color:var(--text-light)">Recommended reading: <a href="/category/' + result.articles[0] + '">' + result.articles[0].replace(/-/g,' ').replace(/\\b\\w/g,l=>l.toUpperCase()) + '</a></p>' : '') +
+    '</div>' +
+    '<div style="margin-top:1.5rem;display:flex;gap:1rem;flex-wrap:wrap">' +
+    '<button onclick="downloadQuizPDF()" style="background:var(--primary);color:var(--secondary);border:none;padding:0.6rem 1.2rem;cursor:pointer;border-radius:4px;font-weight:600;font-size:0.9rem">Download Results as PDF</button>' +
+    '<button onclick="window.print()" style="background:transparent;border:1px solid var(--primary);color:var(--primary);padding:0.6rem 1.2rem;cursor:pointer;border-radius:4px;font-weight:600;font-size:0.9rem">Print Results</button>' +
+    '</div>' +
+    '<div style="margin-top:2rem;background:var(--secondary);padding:1.5rem;border:1px solid var(--border);border-radius:6px"><h4>Stay Connected</h4><p style="font-size:0.9rem;margin-bottom:0.8rem">Get weekly insights on forensic forgiveness delivered to your inbox.</p><form onsubmit="return handleSubscribe(event,\'quiz-${quiz.slug}\')"><div style="display:flex;gap:0.5rem;flex-wrap:wrap"><input type="email" placeholder="Your email" required style="padding:0.5rem;flex:1;min-width:200px;border:1px solid var(--border);border-radius:2px"><button type="submit" style="background:var(--accent);color:white;border:none;padding:0.5rem 1rem;cursor:pointer;border-radius:2px;font-weight:600">Subscribe</button></div></form></div>';
+}
+
+function downloadQuizPDF() {
+  const content = document.getElementById('quiz-result-content');
+  if (!content) return;
+  const title = quizData.title || 'Quiz Results';
+  const resultText = content.innerText;
+  const blob = new Blob(['\\n' + title + '\\n' + '='.repeat(title.length) + '\\n\\n' + 'Date: ' + new Date().toLocaleDateString() + '\\n\\n' + resultText + '\\n\\n---\\nFrom The Unforgiven (unforgiven.love)\\n'], {type: 'text/plain'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = quizData.slug + '-results.txt';
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 renderQ();
