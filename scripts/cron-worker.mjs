@@ -103,6 +103,41 @@ function runWeeklySpotlight() {
   });
 }
 
+// ─── CRON 3: Content refresh (Sunday 10:00 UTC) ───
+function getNextRefreshRun() {
+  const now = new Date();
+  const next = new Date(now);
+  next.setUTCHours(10, 0, 0, 0);
+  const daysUntilSunday = (7 - next.getUTCDay()) % 7;
+  if (daysUntilSunday === 0 && now >= next) {
+    next.setDate(next.getDate() + 7);
+  } else {
+    next.setDate(next.getDate() + daysUntilSunday);
+  }
+  return next;
+}
+
+function scheduleContentRefresh() {
+  const nextRun = getNextRefreshRun();
+  const delay = nextRun.getTime() - Date.now();
+  console.log(`[cron-refresh] Next content refresh scheduled for ${nextRun.toISOString()} (in ${Math.round(delay/1000/60/60)} hours)`);
+  setTimeout(() => {
+    runContentRefresh();
+    scheduleContentRefresh();
+  }, delay);
+}
+
+function runContentRefresh() {
+  console.log(`[cron-refresh] Starting content refresh at ${new Date().toISOString()}`);
+  const child = spawn('node', [path.join(__dirname, 'content-refresh.mjs')], {
+    stdio: 'inherit',
+    env: { ...process.env },
+    timeout: 900000
+  });
+  child.on('error', (err) => console.error('[cron-refresh] Refresh failed:', err));
+  child.on('exit', (code) => console.log(`[cron-refresh] Refresh exited with code ${code}`));
+}
+
 // Handle --run-now flag
 if (process.argv.includes('--run-now')) {
   console.log('[cron] Running generation immediately (--run-now flag)');
@@ -110,10 +145,15 @@ if (process.argv.includes('--run-now')) {
 } else if (process.argv.includes('--run-spotlight')) {
   console.log('[cron] Running product spotlight immediately');
   runWeeklySpotlight();
+} else if (process.argv.includes('--run-refresh')) {
+  console.log('[cron] Running content refresh immediately');
+  runContentRefresh();
 } else {
   console.log('[cron] Cron worker started.');
   console.log('[cron] Cron 1: Daily article publishing Mon-Fri 12:00 UTC (5/day)');
   console.log('[cron] Cron 2: Weekly product spotlight Saturday 14:00 UTC');
+  console.log('[cron] Cron 3: Content refresh Sunday 10:00 UTC (30-day meta + 90-day rewrite)');
   scheduleDailyArticles();
   scheduleWeeklySpotlight();
+  scheduleContentRefresh();
 }
