@@ -11,6 +11,7 @@ const BUNNY_STORAGE_HOST = 'ny.storage.bunnycdn.com';
 const BUNNY_STORAGE_PASSWORD = '24cbeac6-ad6e-4ff9-b892fb9f975f-fb5a-4c5f';
 const BUNNY_CDN_BASE = 'https://unforgiven-love.b-cdn.net';
 const GITHUB_REPO = 'peacefulgeek/unforgiven-love';
+const AMAZON_TAG = 'spankyspinola-20';
 
 import fs from 'fs';
 import path from 'path';
@@ -69,6 +70,94 @@ const KALESH_PHRASES = [
   "Freedom is not the absence of constraint. It's the capacity to choose your relationship to it.",
 ];
 
+// ─── AMAZON PRODUCT CATALOG FOR IN-ARTICLE LINKS ───
+const PRODUCT_CATALOG = [
+  { asin: '0143128043', name: 'The Body Keeps the Score', tags: ['trauma','body','nervous-system','somatic','tension'], sentence: "If you want to go deeper on how trauma lives in the body, I'd recommend picking up <a href=\"URL\" target=\"_blank\" rel=\"nofollow sponsored\">The Body Keeps the Score</a> (paid link) - it changed how I think about this work entirely." },
+  { asin: '0062339346', name: 'The Gifts of Imperfection', tags: ['self-compassion','vulnerability','shame','worthiness'], sentence: "One book that really helped me with this was <a href=\"URL\" target=\"_blank\" rel=\"nofollow sponsored\">The Gifts of Imperfection</a> (paid link) by Brene Brown - it's about letting go of who you think you should be." },
+  { asin: '0553386697', name: 'The Power of Now', tags: ['presence','awareness','consciousness','mindfulness','ego'], sentence: "If presence is something you're working on, <a href=\"URL\" target=\"_blank\" rel=\"nofollow sponsored\">The Power of Now</a> (paid link) is worth having on your shelf." },
+  { asin: '1401944612', name: 'Radical Forgiveness', tags: ['forgiveness','radical','letting-go','spiritual','release'], sentence: "For a structured approach to this, I often point people toward <a href=\"URL\" target=\"_blank\" rel=\"nofollow sponsored\">Radical Forgiveness</a> (paid link) by Colin Tipping - the framework is practical and surprisingly gentle." },
+  { asin: '0062517627', name: 'When Things Fall Apart', tags: ['grief','loss','buddhism','acceptance','suffering'], sentence: "When everything feels like it's crumbling, <a href=\"URL\" target=\"_blank\" rel=\"nofollow sponsored\">When Things Fall Apart</a> (paid link) by Pema Chodron sits with you in the wreckage without trying to fix anything." },
+  { asin: '0399592520', name: 'The Wisdom of Trauma', tags: ['trauma','addiction','connection','childhood','healing'], sentence: "Gabor Mate's <a href=\"URL\" target=\"_blank\" rel=\"nofollow sponsored\">The Wisdom of Trauma</a> (paid link) reframes the whole conversation - trauma isn't what happened to you, it's what happened inside you as a result." },
+  { asin: '1583949771', name: 'Radical Acceptance', tags: ['acceptance','self-compassion','buddhism','meditation'], sentence: "Tara Brach's <a href=\"URL\" target=\"_blank\" rel=\"nofollow sponsored\">Radical Acceptance</a> (paid link) taught me that the opposite of resistance isn't giving up - it's showing up with your whole heart." },
+  { asin: '0062652559', name: 'No Bad Parts', tags: ['ifs','parts-work','inner-child','self-therapy','internal'], sentence: "If parts work interests you, <a href=\"URL\" target=\"_blank\" rel=\"nofollow sponsored\">No Bad Parts</a> (paid link) by Dick Schwartz is the best starting point I know." },
+  { asin: '1556439016', name: 'Waking the Tiger', tags: ['somatic','trauma','body','nervous-system','freeze'], sentence: "Peter Levine's <a href=\"URL\" target=\"_blank\" rel=\"nofollow sponsored\">Waking the Tiger</a> (paid link) explains why the body sometimes needs to shake, tremble, or move to complete what the mind can't finish alone." },
+  { asin: '0393710165', name: 'The Polyvagal Theory', tags: ['polyvagal','nervous-system','safety','vagus-nerve'], sentence: "If you want to understand why your body reacts the way it does, <a href=\"URL\" target=\"_blank\" rel=\"nofollow sponsored\">The Polyvagal Theory</a> (paid link) by Stephen Porges is dense but worth the effort." },
+  { asin: '0062883682', name: 'What Happened to You', tags: ['trauma','childhood','brain','resilience','connection'], sentence: "I keep coming back to <a href=\"URL\" target=\"_blank\" rel=\"nofollow sponsored\">What Happened to You</a> (paid link) - it shifts the question from 'what's wrong with you' to 'what happened to you.'" },
+  { asin: '1401945074', name: 'Forgive for Good', tags: ['forgiveness','science','research','health','method'], sentence: "Fred Luskin's <a href=\"URL\" target=\"_blank\" rel=\"nofollow sponsored\">Forgive for Good</a> (paid link) brings Stanford research to forgiveness - if you need evidence before you trust a process, start here." },
+  { asin: '0525509283', name: 'Set Boundaries Find Peace', tags: ['boundaries','relationships','self-care','communication'], sentence: "If boundaries are the piece you're missing, <a href=\"URL\" target=\"_blank\" rel=\"nofollow sponsored\">Set Boundaries Find Peace</a> (paid link) by Nedra Tawwab is the most practical guide I've found." },
+  { asin: '0062457713', name: 'The Book of Forgiving', tags: ['forgiveness','reconciliation','justice','truth'], sentence: "Desmond Tutu's <a href=\"URL\" target=\"_blank\" rel=\"nofollow sponsored\">The Book of Forgiving</a> (paid link) offers a fourfold path tested in some of the hardest circumstances imaginable." },
+  { asin: '1501121685', name: "It Didn't Start with You", tags: ['ancestral','generational','epigenetics','family','inherited'], sentence: "Mark Wolynn's <a href=\"URL\" target=\"_blank\" rel=\"nofollow sponsored\">It Didn't Start with You</a> (paid link) traces emotional patterns back through family lines - sometimes what you're carrying isn't even yours." },
+  { asin: 'B07R3YPKQX', name: 'Tibetan Singing Bowl Set', tags: ['singing-bowl','meditation','sound','vibration','ritual'], sentence: "I started using a <a href=\"URL\" target=\"_blank\" rel=\"nofollow sponsored\">Tibetan Singing Bowl</a> (paid link) during my own forgiveness practice, and the vibration anchors the work in a way that words alone can't." },
+  { asin: 'B08DFPC99N', name: 'Meditation Cushion', tags: ['meditation','cushion','sitting','practice','posture'], sentence: "A decent <a href=\"URL\" target=\"_blank\" rel=\"nofollow sponsored\">Meditation Cushion</a> (paid link) makes a real difference - the body needs support when you ask it to be still with difficult material." },
+  { asin: 'B0BZK3MHXG', name: 'Theragun Mini', tags: ['massage','tension','body','release','muscle'], sentence: "A <a href=\"URL\" target=\"_blank\" rel=\"nofollow sponsored\">Theragun Mini</a> (paid link) targets the specific muscle tension that often accompanies unresolved resentment - jaw, shoulders, hips especially." },
+  { asin: 'B07PXLF7TC', name: 'Weighted Blanket', tags: ['weighted-blanket','anxiety','nervous-system','sleep','grounding'], sentence: "A <a href=\"URL\" target=\"_blank\" rel=\"nofollow sponsored\">Weighted Blanket</a> (paid link) provides deep pressure stimulation that calms an activated nervous system - it's like a hug that doesn't ask anything of you." },
+  { asin: 'B07RZDCQSC', name: 'Essential Oil Diffuser', tags: ['diffuser','essential-oils','atmosphere','calm','ritual'], sentence: "An <a href=\"URL\" target=\"_blank\" rel=\"nofollow sponsored\">Essential Oil Diffuser</a> (paid link) can anchor your practice in a specific sensory experience - the body remembers scent faster than it remembers words." },
+  { asin: 'B0CYB1K6SG', name: 'Magnesium Glycinate', tags: ['magnesium','sleep','nervous-system','calm','supplement'], sentence: "<a href=\"URL\" target=\"_blank\" rel=\"nofollow sponsored\">Magnesium Glycinate</a> (paid link) supports nervous system regulation and the kind of deep sleep that chronic resentment tends to steal." },
+  { asin: '1648481388', name: 'The Forgiveness Workbook', tags: ['forgiveness','workbook','exercises','writing','practice'], sentence: "If you prefer working things out on paper, <a href=\"URL\" target=\"_blank\" rel=\"nofollow sponsored\">The Forgiveness Workbook</a> (paid link) gives you guided exercises that take this from theory to practice." },
+  { asin: 'B0BX7GR3XG', name: 'Shadow Work Journal', tags: ['shadow','inner-work','journaling','unconscious','self-discovery'], sentence: "A <a href=\"URL\" target=\"_blank\" rel=\"nofollow sponsored\">Shadow Work Journal</a> (paid link) is designed for exactly this kind of exploration - the parts of yourself you tend to avoid are usually the ones holding the resentment." },
+  { asin: 'B0C8JYR2PN', name: 'Breathing Exercise Device', tags: ['breathwork','breathing','nervous-system','regulation','vagus'], sentence: "A <a href=\"URL\" target=\"_blank\" rel=\"nofollow sponsored\">Breathing Exercise Device</a> (paid link) guides your exhale to activate the vagus nerve - it's a physical tool for something that feels entirely internal." },
+  { asin: 'B0CXJK9QMN', name: 'Grounding Mat', tags: ['grounding','earthing','body','nature','nervous-system'], sentence: "A <a href=\"URL\" target=\"_blank\" rel=\"nofollow sponsored\">Grounding Mat</a> (paid link) brings the calming effects of earth contact indoors - your nervous system responds to it whether your mind believes in it or not." },
+];
+
+function selectProducts(title, categorySlug, body) {
+  const text = (title + ' ' + categorySlug + ' ' + body).toLowerCase();
+  const scored = PRODUCT_CATALOG.map(p => {
+    let score = 0;
+    for (const tag of p.tags) {
+      if (text.includes(tag)) score += 3;
+    }
+    return { product: p, score };
+  });
+  scored.sort((a, b) => b.score - a.score);
+  
+  // Pick top 3 with variety
+  const selected = [];
+  const usedAsins = new Set();
+  for (const { product } of scored) {
+    if (selected.length >= 3) break;
+    if (usedAsins.has(product.asin)) continue;
+    selected.push(product);
+    usedAsins.add(product.asin);
+  }
+  return selected;
+}
+
+function injectAmazonLinks(body, products) {
+  const paragraphs = body.match(/<p>[\s\S]*?<\/p>/g) || [];
+  if (paragraphs.length < 4) {
+    // Short article - append links
+    for (const p of products) {
+      const url = `https://www.amazon.com/dp/${p.asin}?tag=${AMAZON_TAG}`;
+      const sentence = p.sentence.replace('URL', url);
+      body += `\n<p>${sentence}</p>`;
+    }
+    return body;
+  }
+  
+  const total = paragraphs.length;
+  const positions = [
+    Math.max(2, Math.floor(total * 0.30)),
+    Math.max(4, Math.floor(total * 0.55)),
+    Math.max(6, Math.floor(total * 0.80)),
+  ];
+  
+  for (let i = products.length - 1; i >= 0; i--) {
+    const pos = Math.min(positions[i] || positions[0], paragraphs.length - 1);
+    const target = paragraphs[pos];
+    const url = `https://www.amazon.com/dp/${products[i].asin}?tag=${AMAZON_TAG}`;
+    const sentence = products[i].sentence.replace('URL', url);
+    const recPara = `<p>${sentence}</p>`;
+    
+    const idx = body.indexOf(target);
+    if (idx >= 0) {
+      const insertPoint = idx + target.length;
+      body = body.slice(0, insertPoint) + '\n' + recPara + body.slice(insertPoint);
+    }
+  }
+  
+  return body;
+}
+
 async function generateArticle(topic, category) {
   const openerType = OPENER_TYPES[Math.floor(Math.random() * OPENER_TYPES.length)];
   const conclusionType = Math.random() > 0.5 ? 'challenge' : 'tender';
@@ -126,6 +215,10 @@ STRICT RULES:
   // Post-process: remove em-dashes and banned words
   body = body.replace(/\u2014/g, ' - ').replace(/\u2013/g, ' - ');
   body = body.replace(/---/g, '...').replace(/--/g, ' - ');
+  
+  // Inject 3 Amazon affiliate links into the body
+  const products = selectProducts(topic, category.slug, body);
+  body = injectAmazonLinks(body, products);
   
   return body;
 }
@@ -239,6 +332,10 @@ async function main() {
         const slug = `new-${Date.now()}-${i}`;
         const futureDate = new Date();
         futureDate.setDate(futureDate.getDate() + gatedCount + i);
+        
+        // Count Amazon links to verify
+        const amazonLinks = (body.match(/amazon\.com\/dp\//g) || []).length;
+        console.log(`[generate] Article ${i + 1}/5 has ${amazonLinks} Amazon links`);
         
         newArticles.push({
           slug,
