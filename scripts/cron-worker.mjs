@@ -104,6 +104,7 @@ function runWeeklySpotlight() {
 }
 
 // ─── CRON 3: Content refresh (Sunday 10:00 UTC) ───
+// ─── (Cron 4 defined below after Cron 3) ───
 function getNextRefreshRun() {
   const now = new Date();
   const next = new Date(now);
@@ -138,6 +139,42 @@ function runContentRefresh() {
   child.on('exit', (code) => console.log(`[cron-refresh] Refresh exited with code ${code}`));
 }
 
+// ─── CRON 4: Product link health checker (Wednesday 16:00 UTC) ───
+function getNextLinkCheckRun() {
+  const now = new Date();
+  const next = new Date(now);
+  next.setUTCHours(16, 0, 0, 0);
+  // Find next Wednesday (day 3)
+  const daysUntilWed = (3 - next.getUTCDay() + 7) % 7;
+  if (daysUntilWed === 0 && now >= next) {
+    next.setDate(next.getDate() + 7);
+  } else {
+    next.setDate(next.getDate() + daysUntilWed);
+  }
+  return next;
+}
+
+function scheduleLinkCheck() {
+  const nextRun = getNextLinkCheckRun();
+  const delay = nextRun.getTime() - Date.now();
+  console.log(`[cron-links] Next product link health check scheduled for ${nextRun.toISOString()} (in ${Math.round(delay/1000/60/60)} hours)`);
+  setTimeout(() => {
+    runLinkCheck();
+    scheduleLinkCheck();
+  }, delay);
+}
+
+function runLinkCheck() {
+  console.log(`[cron-links] Starting product link health check at ${new Date().toISOString()}`);
+  const child = spawn('node', [path.join(__dirname, 'product-link-checker.mjs'), '--run-now'], {
+    stdio: 'inherit',
+    env: { ...process.env },
+    timeout: 1200000 // 20 min timeout (48 ASINs * 1.5s each + overhead)
+  });
+  child.on('error', (err) => console.error('[cron-links] Link check failed:', err));
+  child.on('exit', (code) => console.log(`[cron-links] Link check exited with code ${code}`));
+}
+
 // Handle --run-now flag
 if (process.argv.includes('--run-now')) {
   console.log('[cron] Running generation immediately (--run-now flag)');
@@ -148,12 +185,17 @@ if (process.argv.includes('--run-now')) {
 } else if (process.argv.includes('--run-refresh')) {
   console.log('[cron] Running content refresh immediately');
   runContentRefresh();
+} else if (process.argv.includes('--run-linkcheck')) {
+  console.log('[cron] Running product link health check immediately');
+  runLinkCheck();
 } else {
   console.log('[cron] Cron worker started.');
   console.log('[cron] Cron 1: Daily article publishing Mon-Fri 12:00 UTC (5/day)');
   console.log('[cron] Cron 2: Weekly product spotlight Saturday 14:00 UTC');
   console.log('[cron] Cron 3: Content refresh Sunday 10:00 UTC (30-day meta + 90-day rewrite)');
+  console.log('[cron] Cron 4: Product link health check Wednesday 16:00 UTC');
   scheduleDailyArticles();
   scheduleWeeklySpotlight();
   scheduleContentRefresh();
+  scheduleLinkCheck();
 }
