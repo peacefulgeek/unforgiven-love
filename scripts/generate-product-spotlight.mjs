@@ -30,12 +30,12 @@ const PRODUCT_POOL = [
   { name: 'Tibetan Singing Bowl Set', author: 'Silent Mind', asin: 'B06XHN7VRG', category: 'the-body', topic: 'using sound vibration for somatic release' },
   { name: 'The Self-Compassion Workbook', author: 'Kristin Neff', asin: '1462526780', category: 'the-specific', topic: 'building the foundation for self-forgiveness' },
   { name: 'Waking the Tiger', author: 'Peter Levine', asin: '155643233X', category: 'the-body', topic: 'somatic experiencing and trauma discharge' },
-  { name: 'Acupressure Mat', author: 'ProsourceFit', asin: 'B00BMS4GEG', category: 'the-body', topic: 'physical tools for releasing stored resentment' },
+  { name: 'Acupressure Mat', author: 'ProsourceFit', asin: 'B0GD8RBY65', category: 'the-body', topic: 'physical tools for releasing stored resentment' },
   { name: 'When Things Fall Apart', author: 'Pema Chödrön', asin: '1570629692', category: 'the-liberation', topic: 'staying present with pain instead of running' },
   { name: 'It Didn\'t Start with You', author: 'Mark Wolynn', asin: '1101980389', category: 'the-specific', topic: 'inherited family trauma and ancestral resentment' },
   { name: 'Weighted Blanket', author: 'YnM', asin: 'B073429DV2', category: 'the-body', topic: 'deep pressure stimulation for nervous system regulation' },
   { name: 'The Book of Forgiving', author: 'Desmond Tutu', asin: '0062203576', category: 'the-lie', topic: 'forgiveness at the civilizational scale' },
-  { name: 'Foam Roller', author: 'LuxFit', asin: 'B00KAEJ51A', category: 'the-body', topic: 'myofascial release as emotional release' },
+  { name: 'Foam Roller', author: 'LuxFit', asin: 'B01BW2YYWY', category: 'the-body', topic: 'myofascial release as emotional release' },
 ];
 
 // Feature flag

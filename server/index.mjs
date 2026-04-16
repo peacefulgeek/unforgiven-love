@@ -1166,7 +1166,7 @@ app.get('/tools', (req, res) => {
         { name: 'Radical Forgiveness', author: 'Colin Tipping', asin: '1591797640', desc: 'Tipping reframes forgiveness as a spiritual technology rather than a moral obligation. His five-stage process cuts through the intellectual resistance most people feel when told to "just forgive."' },
         { name: 'The Book of Forgiving', author: 'Desmond Tutu & Mpho Tutu', asin: '0062203576', desc: 'Written by the architect of South Africa\'s Truth and Reconciliation Commission, this is forgiveness at the civilizational scale — and somehow still deeply personal.' },
         { name: 'Forgiving What You Can\'t Forget', author: 'Lysa TerKeurst', asin: '0718039874', desc: 'For when the wound is still fresh and the idea of forgiveness feels like betrayal. TerKeurst writes from lived experience, not theory, and her honesty about the messiness of the process is rare.' },
-        { name: 'Forgive and Forget', author: 'Lewis B. Smedes', asin: '0061285826', desc: 'The classic that started the modern forgiveness conversation. Smedes distinguishes between forgiving and excusing, forgiving and forgetting, forgiving and reconciling — distinctions most people never make.' },
+        { name: 'Forgive and Forget', author: 'Lewis B. Smedes', asin: '1572245379', desc: 'The classic that started the modern forgiveness conversation. Smedes distinguishes between forgiving and excusing, forgiving and forgetting, forgiving and reconciling — distinctions most people never make.' },
       ]
     },
     {
@@ -1182,20 +1182,20 @@ app.get('/tools', (req, res) => {
     {
       name: 'Journals & Workbooks',
       products: [
-        { name: 'The Forgiveness Workbook', author: 'Eileen Barker', asin: '1641524391', desc: 'A structured, guided workbook that walks you through the forgiveness process one exercise at a time. Useful for people who need a container for the work — not just inspiration.' },
+        { name: 'The Forgiveness Workbook', author: 'Eileen Barker', asin: '1611803438', desc: 'A structured, guided workbook that walks you through the forgiveness process one exercise at a time. Useful for people who need a container for the work — not just inspiration.' },
         { name: 'The Self-Compassion Workbook', author: 'Kristin Neff & Christopher Germer', asin: '1462526780', desc: 'Self-forgiveness requires self-compassion first. Neff\'s research-backed exercises help you build the internal foundation that makes genuine self-forgiveness possible.' },
         { name: 'Moleskine Classic Notebook', author: '', asin: '8883701127', desc: 'Sometimes the best forgiveness tool is a blank page. The Moleskine is our go-to for freewriting, resentment inventories, and the forensic examination of what you\'re carrying.' },
-        { name: 'Morning Pages Journal', author: 'Julia Cameron', asin: '0874778867', desc: 'Cameron\'s "The Artist\'s Way" morning pages practice is one of the most effective ways to surface unconscious resentment. This companion journal makes the practice tangible.' },
+        { name: 'Morning Pages Journal', author: 'Julia Cameron', asin: '1462526780', desc: 'Cameron\'s "The Artist\'s Way" morning pages practice is one of the most effective ways to surface unconscious resentment. This companion journal makes the practice tangible.' },
       ]
     },
     {
       name: 'Meditation & Somatic Tools',
       products: [
         { name: 'Tibetan Singing Bowl Set', author: 'Silent Mind', asin: 'B06XHN7VRG', desc: 'Sound vibration is one of the fastest ways to shift a stuck emotional state. This handcrafted bowl produces the kind of resonance that helps the body release what the mind can\'t.' },
-        { name: 'Zafu Meditation Cushion', author: 'Retrospec', asin: 'B07GXCF76X', desc: 'Proper posture changes the quality of your inner work. This buckwheat hull cushion supports the kind of sustained sitting that forgiveness meditation requires.' },
-        { name: 'Acupressure Mat and Pillow Set', author: 'ProsourceFit', asin: 'B00BMS4GEG', desc: 'When resentment is lodged in the back, shoulders, or neck, this acupressure mat provides targeted somatic release. Twenty minutes on this mat can shift what hours of thinking cannot.' },
+        { name: 'Zafu Meditation Cushion', author: 'Retrospec', asin: 'B0002046F8', desc: 'Proper posture changes the quality of your inner work. This buckwheat hull cushion supports the kind of sustained sitting that forgiveness meditation requires.' },
+        { name: 'Acupressure Mat and Pillow Set', author: 'ProsourceFit', asin: 'B0GD8RBY65', desc: 'When resentment is lodged in the back, shoulders, or neck, this acupressure mat provides targeted somatic release. Twenty minutes on this mat can shift what hours of thinking cannot.' },
         { name: 'Weighted Blanket (20 lbs)', author: 'YnM', asin: 'B073429DV2', desc: 'Deep pressure stimulation activates the parasympathetic nervous system — the state your body needs to be in for genuine forgiveness work. This is the tool for when your nervous system won\'t settle.' },
-        { name: 'Essential Oil Diffuser', author: 'ASAKUKI', asin: 'B07C1NVNKQ', desc: 'Scent bypasses the cognitive brain entirely. Lavender, frankincense, and sandalwood create the olfactory environment that supports deep emotional processing.' },
+        { name: 'Essential Oil Diffuser', author: 'ASAKUKI', asin: 'B075817VBP', desc: 'Scent bypasses the cognitive brain entirely. Lavender, frankincense, and sandalwood create the olfactory environment that supports deep emotional processing.' },
       ]
     },
     {
@@ -1210,9 +1210,9 @@ app.get('/tools', (req, res) => {
       name: 'Physical Healing & Bodywork Tools',
       products: [
         { name: 'TheraCane Massager', author: '', asin: 'B000PRMCJU', desc: 'Trigger points hold emotional memory. The TheraCane lets you access and release the deep tissue knots that form around unprocessed resentment — especially in the upper back and shoulders.' },
-        { name: 'Yoga Blocks (Set of 2)', author: 'Gaiam', asin: 'B0027DFJRA', desc: 'Restorative yoga is one of the most effective somatic forgiveness practices. These blocks support the kind of long, surrendered holds that allow the body to release what it\'s gripping.' },
-        { name: 'Foam Roller', author: 'LuxFit', asin: 'B00KAEJ51A', desc: 'Myofascial release is the physical counterpart to emotional release. Rolling out the IT band, hip flexors, and thoracic spine can unlock stored grief and anger that talk therapy misses.' },
-        { name: 'Breathwork Trainer', author: 'Airofit', asin: 'B08KWJQ3WX', desc: 'Conscious breathing is the bridge between the body and the mind. This device trains respiratory capacity and control — the foundation of every somatic forgiveness practice.' },
+        { name: 'Yoga Blocks (Set of 2)', author: 'Gaiam', asin: 'B0DHCHK1G6', desc: 'Restorative yoga is one of the most effective somatic forgiveness practices. These blocks support the kind of long, surrendered holds that allow the body to release what it\'s gripping.' },
+        { name: 'Foam Roller', author: 'LuxFit', asin: 'B01BW2YYWY', desc: 'Myofascial release is the physical counterpart to emotional release. Rolling out the IT band, hip flexors, and thoracic spine can unlock stored grief and anger that talk therapy misses.' },
+        { name: 'Breathwork Trainer', author: 'Airofit', asin: 'B01BW2YYWY', desc: 'Conscious breathing is the bridge between the body and the mind. This device trains respiratory capacity and control — the foundation of every somatic forgiveness practice.' },
       ]
     },
   ];
