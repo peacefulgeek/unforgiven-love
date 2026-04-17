@@ -8,9 +8,19 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
-      - key: ANTHROPIC_API_KEY
+      - key: AUTO_GEN_ENABLED
+        value: "true"
+      - key: AMAZON_TAG
+        value: spankyspinola-20
+      - key: OPENAI_API_KEY
         sync: false
       - key: FAL_KEY
         sync: false
       - key: GH_PAT
         sync: false
+      - key: BUNNY_API_KEY
+        sync: false
+      - key: BUNNY_STORAGE_ZONE
+        value: unforgiven-love
+      - key: BUNNY_PULL_ZONE_URL
+        value: https://unforgiven-love.b-cdn.net

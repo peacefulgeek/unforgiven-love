@@ -508,6 +508,17 @@ app.use((req, res, next) => {
 app.use(express.json());
 app.use(express.static(path.join(ROOT, 'public')));
 
+// ─── HEALTH CHECK ───
+app.get('/health', (req, res) => {
+  const articles = loadArticles();
+  res.json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    articles: articles.length,
+    uptime: process.uptime()
+  });
+});
+
 if (isProduction) {
   app.use(express.static(path.join(ROOT, 'dist', 'client')));
 }
@@ -1031,7 +1042,7 @@ ${shareHtml}
 ${article.hasAffiliateLinks ? '<div class="affiliate-disclosure" style="background:#FFF8E7;border:1px solid var(--border);padding:0.8rem 1rem;margin-bottom:1.5rem;font-size:0.8rem;color:var(--text-light);border-radius:4px">This article contains affiliate links. We may earn a small commission if you make a purchase &mdash; at no extra cost to you.</div>' : ''}
 <div class="article-body">${article.body}</div>
 ${faqHtml}
-${(() => { const products = matchProducts(article, 4); return buildHealingJourneySection(products); })()}
+${(() => { const products = matchProducts({ article, count: 4 }); return buildHealingJourneySection(products); })()}
 <div class="health-disclaimer" style="background:linear-gradient(135deg,#FFF8E7,#FFF3D6);border:1px solid var(--border);border-radius:8px;padding:1.5rem;margin-top:2rem;margin-bottom:1.5rem">
 <h4 style="font-family:var(--serif);color:var(--primary);margin-bottom:0.5rem;font-size:1rem">Important Health Notice</h4>
 <p style="font-size:0.85rem;color:var(--text-light);margin:0;line-height:1.6">The content on this site is intended for educational and informational purposes only and should not be construed as professional medical or psychological advice. The information provided here is not a substitute for consultation with a qualified healthcare provider, licensed therapist, or mental health professional. Every individual's situation is unique, and what works for one person may not be appropriate for another. If you are experiencing emotional distress, mental health challenges, or physical symptoms related to stress or trauma, please consult your healthcare provider or a licensed professional before making any changes to your wellness routine.</p>

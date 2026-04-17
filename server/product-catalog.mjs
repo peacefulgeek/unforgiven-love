@@ -200,7 +200,7 @@ const KEYWORD_TAG_MAP = {
   'cortisol': ['cortisol', 'stress', 'adaptogen', 'ashwagandha', 'sleep'],
 };
 
-export function matchProducts(article, count = 4) {
+export function matchProducts({ article, count = 4 } = {}) {
   const title = (article.title || '').toLowerCase();
   const category = article.category || '';
   const slug = (article.slug || '').toLowerCase();

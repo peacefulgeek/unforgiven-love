@@ -1,201 +1,70 @@
+import cron from 'node-cron';
 import { spawn } from 'child_process';
 import { fileURLToPath } from 'url';
 import path from 'path';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const AUTO_GEN_ENABLED = process.env.AUTO_GEN_ENABLED === 'true';
 
-// ─── CRON 1: Daily article publishing (Mon-Fri 12:00 UTC, 5/day) ───
-function getNextDailyRun() {
-  const now = new Date();
-  const next = new Date(now);
-  
-  // Mon-Fri 12:00 UTC (6AM MDT)
-  next.setUTCHours(12, 0, 0, 0);
-  
-  if (now >= next || next.getUTCDay() === 0 || next.getUTCDay() === 6) {
-    next.setDate(next.getDate() + 1);
-  }
-  
-  // Skip weekends
-  while (next.getUTCDay() === 0 || next.getUTCDay() === 6) {
-    next.setDate(next.getDate() + 1);
-  }
-  
-  return next;
-}
-
-function scheduleDailyArticles() {
-  const nextRun = getNextDailyRun();
-  const delay = nextRun.getTime() - Date.now();
-  
-  console.log(`[cron-daily] Next article publish scheduled for ${nextRun.toISOString()} (in ${Math.round(delay/1000/60)} minutes)`);
-  
-  setTimeout(() => {
-    runDailyGeneration();
-    scheduleDailyArticles();
-  }, delay);
-}
-
-function runDailyGeneration() {
-  console.log(`[cron-daily] Starting article generation at ${new Date().toISOString()}`);
-  
-  const child = spawn('node', [path.join(__dirname, 'generate-articles.mjs')], {
+function run(label, script, timeoutMs = 600_000) {
+  console.log(`[${label}] Starting at ${new Date().toISOString()}`);
+  const child = spawn('node', [path.join(__dirname, script)], {
     stdio: 'inherit',
     env: { ...process.env },
-    timeout: 600000
+    timeout: timeoutMs
   });
-  
-  child.on('error', (err) => {
-    console.error('[cron-daily] Generation failed:', err);
-  });
-  
-  child.on('exit', (code) => {
-    console.log(`[cron-daily] Generation exited with code ${code}`);
-  });
+  child.on('error', (err) => console.error(`[${label}] Failed:`, err));
+  child.on('exit', (code) => console.log(`[${label}] Exited with code ${code}`));
 }
 
-// ─── CRON 2: Weekly product spotlight (Saturday 14:00 UTC) ───
-function getNextWeeklyRun() {
-  const now = new Date();
-  const next = new Date(now);
-  
-  // Saturday 14:00 UTC (8AM MDT)
-  next.setUTCHours(14, 0, 0, 0);
-  
-  // Find next Saturday
-  const daysUntilSaturday = (6 - next.getUTCDay() + 7) % 7;
-  if (daysUntilSaturday === 0 && now >= next) {
-    next.setDate(next.getDate() + 7);
-  } else {
-    next.setDate(next.getDate() + daysUntilSaturday);
-  }
-  
-  return next;
-}
+// ─── Cron 1: Article generation — Mon-Fri 06:00 UTC ───
+// '0 6 * * 1-5'
+cron.schedule('0 6 * * 1-5', () => {
+  if (!AUTO_GEN_ENABLED) { console.log('[cron-1] AUTO_GEN_ENABLED is false, skipping'); return; }
+  run('cron-1-articles', 'generate-articles.mjs', 600_000);
+}, { timezone: 'UTC' });
 
-function scheduleWeeklySpotlight() {
-  const nextRun = getNextWeeklyRun();
-  const delay = nextRun.getTime() - Date.now();
-  
-  console.log(`[cron-weekly] Next product spotlight scheduled for ${nextRun.toISOString()} (in ${Math.round(delay/1000/60/60)} hours)`);
-  
-  setTimeout(() => {
-    runWeeklySpotlight();
-    scheduleWeeklySpotlight();
-  }, delay);
-}
+// ─── Cron 2: Product spotlight — Saturday 08:00 UTC ───
+// '0 8 * * 6'
+cron.schedule('0 8 * * 6', () => {
+  if (!AUTO_GEN_ENABLED) { console.log('[cron-2] AUTO_GEN_ENABLED is false, skipping'); return; }
+  run('cron-2-spotlight', 'generate-product-spotlight.mjs', 600_000);
+}, { timezone: 'UTC' });
 
-function runWeeklySpotlight() {
-  console.log(`[cron-weekly] Starting product spotlight generation at ${new Date().toISOString()}`);
-  
-  const child = spawn('node', [path.join(__dirname, 'generate-product-spotlight.mjs')], {
-    stdio: 'inherit',
-    env: { ...process.env },
-    timeout: 600000
-  });
-  
-  child.on('error', (err) => {
-    console.error('[cron-weekly] Product spotlight failed:', err);
-  });
-  
-  child.on('exit', (code) => {
-    console.log(`[cron-weekly] Product spotlight exited with code ${code}`);
-  });
-}
+// ─── Cron 3: Monthly content refresh — 1st of every month 03:00 UTC ───
+// '0 3 1 * *'
+cron.schedule('0 3 1 * *', () => {
+  if (!AUTO_GEN_ENABLED) { console.log('[cron-3] AUTO_GEN_ENABLED is false, skipping'); return; }
+  run('cron-3-monthly', 'content-refresh.mjs', 1_800_000);
+}, { timezone: 'UTC' });
 
-// ─── CRON 3: Content refresh (Sunday 10:00 UTC) ───
-// ─── (Cron 4 defined below after Cron 3) ───
-function getNextRefreshRun() {
-  const now = new Date();
-  const next = new Date(now);
-  next.setUTCHours(10, 0, 0, 0);
-  const daysUntilSunday = (7 - next.getUTCDay()) % 7;
-  if (daysUntilSunday === 0 && now >= next) {
-    next.setDate(next.getDate() + 7);
-  } else {
-    next.setDate(next.getDate() + daysUntilSunday);
-  }
-  return next;
-}
+// ─── Cron 4: Quarterly deep refresh — 1st of Jan, Apr, Jul, Oct 04:00 UTC ───
+// '0 4 1 1,4,7,10 *'
+cron.schedule('0 4 1 1,4,7,10 *', () => {
+  if (!AUTO_GEN_ENABLED) { console.log('[cron-4] AUTO_GEN_ENABLED is false, skipping'); return; }
+  run('cron-4-quarterly', 'content-refresh.mjs', 3_600_000);
+}, { timezone: 'UTC' });
 
-function scheduleContentRefresh() {
-  const nextRun = getNextRefreshRun();
-  const delay = nextRun.getTime() - Date.now();
-  console.log(`[cron-refresh] Next content refresh scheduled for ${nextRun.toISOString()} (in ${Math.round(delay/1000/60/60)} hours)`);
-  setTimeout(() => {
-    runContentRefresh();
-    scheduleContentRefresh();
-  }, delay);
-}
+// ─── Cron 5: ASIN health check — Sunday 05:00 UTC ───
+// '0 5 * * 0'
+cron.schedule('0 5 * * 0', () => {
+  run('cron-5-asin-health', 'product-link-checker.mjs', 1_200_000);
+}, { timezone: 'UTC' });
 
-function runContentRefresh() {
-  console.log(`[cron-refresh] Starting content refresh at ${new Date().toISOString()}`);
-  const child = spawn('node', [path.join(__dirname, 'content-refresh.mjs')], {
-    stdio: 'inherit',
-    env: { ...process.env },
-    timeout: 900000
-  });
-  child.on('error', (err) => console.error('[cron-refresh] Refresh failed:', err));
-  child.on('exit', (code) => console.log(`[cron-refresh] Refresh exited with code ${code}`));
-}
-
-// ─── CRON 4: Product link health checker (Wednesday 16:00 UTC) ───
-function getNextLinkCheckRun() {
-  const now = new Date();
-  const next = new Date(now);
-  next.setUTCHours(16, 0, 0, 0);
-  // Find next Wednesday (day 3)
-  const daysUntilWed = (3 - next.getUTCDay() + 7) % 7;
-  if (daysUntilWed === 0 && now >= next) {
-    next.setDate(next.getDate() + 7);
-  } else {
-    next.setDate(next.getDate() + daysUntilWed);
-  }
-  return next;
-}
-
-function scheduleLinkCheck() {
-  const nextRun = getNextLinkCheckRun();
-  const delay = nextRun.getTime() - Date.now();
-  console.log(`[cron-links] Next product link health check scheduled for ${nextRun.toISOString()} (in ${Math.round(delay/1000/60/60)} hours)`);
-  setTimeout(() => {
-    runLinkCheck();
-    scheduleLinkCheck();
-  }, delay);
-}
-
-function runLinkCheck() {
-  console.log(`[cron-links] Starting product link health check at ${new Date().toISOString()}`);
-  const child = spawn('node', [path.join(__dirname, 'product-link-checker.mjs'), '--run-now'], {
-    stdio: 'inherit',
-    env: { ...process.env },
-    timeout: 1200000 // 20 min timeout (48 ASINs * 1.5s each + overhead)
-  });
-  child.on('error', (err) => console.error('[cron-links] Link check failed:', err));
-  child.on('exit', (code) => console.log(`[cron-links] Link check exited with code ${code}`));
-}
-
-// Handle --run-now flag
+// ─── Manual triggers via CLI flags ───
 if (process.argv.includes('--run-now')) {
-  console.log('[cron] Running generation immediately (--run-now flag)');
-  runDailyGeneration();
+  run('manual-articles', 'generate-articles.mjs');
 } else if (process.argv.includes('--run-spotlight')) {
-  console.log('[cron] Running product spotlight immediately');
-  runWeeklySpotlight();
+  run('manual-spotlight', 'generate-product-spotlight.mjs');
 } else if (process.argv.includes('--run-refresh')) {
-  console.log('[cron] Running content refresh immediately');
-  runContentRefresh();
+  run('manual-refresh', 'content-refresh.mjs', 1_800_000);
 } else if (process.argv.includes('--run-linkcheck')) {
-  console.log('[cron] Running product link health check immediately');
-  runLinkCheck();
+  run('manual-linkcheck', 'product-link-checker.mjs', 1_200_000);
 } else {
-  console.log('[cron] Cron worker started.');
-  console.log('[cron] Cron 1: Daily article publishing Mon-Fri 12:00 UTC (5/day)');
-  console.log('[cron] Cron 2: Weekly product spotlight Saturday 14:00 UTC');
-  console.log('[cron] Cron 3: Content refresh Sunday 10:00 UTC (30-day meta + 90-day rewrite)');
-  console.log('[cron] Cron 4: Product link health check Wednesday 16:00 UTC');
-  scheduleDailyArticles();
-  scheduleWeeklySpotlight();
-  scheduleContentRefresh();
-  scheduleLinkCheck();
+  console.log('[cron] Worker started with node-cron. AUTO_GEN_ENABLED =', AUTO_GEN_ENABLED);
+  console.log('[cron] Cron 1: Article generation      — 0 6 * * 1-5   (Mon-Fri 06:00 UTC)');
+  console.log('[cron] Cron 2: Product spotlight        — 0 8 * * 6     (Saturday 08:00 UTC)');
+  console.log('[cron] Cron 3: Monthly content refresh  — 0 3 1 * *     (1st of month 03:00 UTC)');
+  console.log('[cron] Cron 4: Quarterly deep refresh   — 0 4 1 1,4,7,10 * (Quarterly 04:00 UTC)');
+  console.log('[cron] Cron 5: ASIN health check        — 0 5 * * 0     (Sunday 05:00 UTC)');
 }
