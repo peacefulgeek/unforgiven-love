@@ -493,6 +493,15 @@ function jsonLdBreadcrumb(items) {
 const app = express();
 app.use(compression());
 
+// www → non-www 301 redirect (canonical domain)
+app.use((req, res, next) => {
+  if (req.headers.host && req.headers.host.startsWith('www.')) {
+    const nonWww = req.headers.host.slice(4);
+    return res.redirect(301, `https://${nonWww}${req.url}`);
+  }
+  next();
+});
+
 // Security headers
 app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
