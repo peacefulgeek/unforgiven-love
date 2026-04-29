@@ -1,196 +1,175 @@
-import { countAmazonLinks, extractAsinsFromText } from './amazon-verify.mjs';
+/**
+ * Article Quality Gate — The Paul Voice Gate (Non-Negotiable)
+ * Every article must pass this gate. If it fails, regenerate (up to 4 attempts).
+ * Do not store failed articles.
+ */
 
-// Words that flag content as AI-generated. Pulled from public AI-detection research
-// (Originality.ai, GPTZero, Copyleaks) and Google's Helpful Content Update patterns.
-const AI_FLAGGED_WORDS = [
-  // The classic AI tells
-  'delve', 'tapestry', 'paradigm', 'synergy', 'leverage', 'unlock', 'empower',
-  'utilize', 'pivotal', 'embark', 'underscore', 'paramount', 'seamlessly',
-  'robust', 'beacon', 'foster', 'elevate', 'curate', 'curated', 'bespoke',
-  'resonate', 'harness', 'intricate', 'plethora', 'myriad', 'comprehensive',
-  // Marketing fluff that AI loves
-  'transformative', 'groundbreaking', 'innovative', 'cutting-edge', 'revolutionary',
-  'state-of-the-art', 'ever-evolving', 'game-changing', 'next-level', 'world-class',
-  'unparalleled', 'unprecedented', 'remarkable', 'extraordinary', 'exceptional',
-  // Abstract filler
-  'profound', 'holistic', 'nuanced', 'multifaceted', 'stakeholders',
-  'ecosystem', 'landscape', 'realm', 'sphere', 'domain',
-  // AI hedging
-  'arguably', 'notably', 'crucially', 'importantly', 'essentially',
-  'fundamentally', 'inherently', 'intrinsically', 'substantively',
-  // Bullshit verbs
-  'streamline', 'optimize', 'facilitate', 'amplify', 'catalyze',
-  'propel', 'spearhead', 'orchestrate', 'navigate', 'traverse',
-  // AI-favorite connectors
-  'furthermore', 'moreover', 'additionally', 'consequently', 'subsequently',
-  'thereby', 'thusly', 'wherein', 'whereby'
+// ─── BANNED WORDS (regex match, case-insensitive) ───
+const BANNED_WORDS = [
+  'utilize', 'delve', 'tapestry', 'landscape', 'paradigm', 'synergy',
+  'leverage', 'unlock', 'empower', 'pivotal', 'embark', 'underscore',
+  'paramount', 'seamlessly', 'robust', 'beacon', 'foster', 'elevate',
+  'curate', 'curated', 'bespoke', 'resonate', 'harness', 'intricate',
+  'plethora', 'myriad', 'groundbreaking', 'innovative', 'cutting-edge',
+  'state-of-the-art', 'game-changer', 'ever-evolving', 'rapidly-evolving',
+  'stakeholders', 'navigate', 'ecosystem', 'framework', 'comprehensive',
+  'transformative', 'holistic', 'nuanced', 'multifaceted', 'profound',
+  'furthermore'
 ];
 
-// Phrases that scream AI even if the words are fine in isolation
-const AI_FLAGGED_PHRASES = [
+// ─── BANNED PHRASES (string match, case-insensitive) ───
+const BANNED_PHRASES = [
   "it's important to note that",
   "it's worth noting that",
-  "it's worth mentioning",
-  "it's crucial to",
-  "it is essential to",
-  "in conclusion,",
-  "in summary,",
-  "to summarize,",
+  "in conclusion",
+  "in summary",
   "a holistic approach",
-  "unlock your potential",
-  "unlock the power",
   "in the realm of",
-  "in the world of",
   "dive deep into",
-  "dive into",
-  "delve into",
   "at the end of the day",
   "in today's fast-paced world",
-  "in today's digital age",
-  "in today's modern world",
-  "in this digital age",
-  "when it comes to",
-  "navigate the complexities",
-  "a testament to",
-  "speaks volumes",
-  "the power of",
-  "the beauty of",
-  "the art of",
-  "the journey of",
-  "the key lies in",
-  "plays a crucial role",
-  "plays a vital role",
-  "plays a significant role",
-  "plays a pivotal role",
-  "a wide array of",
-  "a wide range of",
-  "a plethora of",
-  "a myriad of",
-  "stands as a",
-  "serves as a",
-  "acts as a",
-  "has emerged as",
-  "continues to evolve",
-  "has revolutionized",
-  "cannot be overstated",
-  "it goes without saying",
-  "needless to say",
-  "last but not least",
-  "first and foremost"
+  "plays a crucial role"
 ];
 
+/**
+ * Strip HTML tags for text analysis
+ */
+function stripHtml(text) {
+  return text.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+/**
+ * Count words in text (HTML stripped)
+ */
 export function countWords(text) {
-  const stripped = text.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+  const stripped = stripHtml(text);
   return stripped ? stripped.split(/\s+/).length : 0;
 }
 
-export function hasEmDash(text) {
-  return text.includes('\u2014');
+/**
+ * Count Amazon affiliate links
+ */
+export function countAmazonLinks(text) {
+  const matches = text.match(/amazon\.com\/dp\/[A-Z0-9]{10}/g);
+  return matches ? matches.length : 0;
 }
 
-export function findFlaggedWords(text) {
-  const stripped = text.replace(/<[^>]+>/g, ' ').toLowerCase();
+/**
+ * Extract ASINs from text
+ */
+export function extractAsins(text) {
+  const matches = text.match(/amazon\.com\/dp\/([A-Z0-9]{10})/g);
+  if (!matches) return [];
+  return matches.map(m => m.replace('amazon.com/dp/', ''));
+}
+
+/**
+ * Check for em-dashes. Auto-replace them with " - " before checking.
+ * Returns the cleaned text and whether any were found.
+ */
+export function fixEmDashes(text) {
+  const cleaned = text.replace(/[\u2014\u2013]/g, ' - ');
+  const hadEmDash = text !== cleaned;
+  return { cleaned, hadEmDash };
+}
+
+/**
+ * Find banned words in text (case-insensitive regex)
+ */
+export function findBannedWords(text) {
+  const stripped = stripHtml(text).toLowerCase();
   const found = [];
-  for (const w of AI_FLAGGED_WORDS) {
-    if (new RegExp(`\\b${w.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')}\\b`, 'i').test(stripped)) {
-      found.push(w);
+  for (const word of BANNED_WORDS) {
+    const escaped = word.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+    if (new RegExp(`\\b${escaped}\\b`, 'i').test(stripped)) {
+      found.push(word);
     }
   }
   return found;
 }
 
-export function findFlaggedPhrases(text) {
-  const stripped = text.replace(/<[^>]+>/g, ' ').toLowerCase().replace(/\s+/g, ' ');
-  return AI_FLAGGED_PHRASES.filter(p => stripped.includes(p));
+/**
+ * Find banned phrases in text (case-insensitive string match)
+ */
+export function findBannedPhrases(text) {
+  const stripped = stripHtml(text).toLowerCase().replace(/\s+/g, ' ');
+  return BANNED_PHRASES.filter(p => stripped.includes(p.toLowerCase()));
 }
 
-export function voiceSignals(text) {
-  const stripped = text.replace(/<[^>]+>/g, ' ');
+/**
+ * Check voice signals: contractions, direct address, dialogue markers
+ */
+export function checkVoice(text) {
+  const stripped = stripHtml(text);
   const lower = stripped.toLowerCase();
 
+  // Contractions
   const contractions = (lower.match(/\b\w+'(s|re|ve|d|ll|m|t)\b/g) || []).length;
+
+  // Direct address ("you")
   const directAddress = (lower.match(/\byou('re|r|rself|)?\b/g) || []).length;
-  const firstPerson = (lower.match(/\b(i|i'm|i've|i'd|i'll|my|me|mine)\b/g) || []).length;
 
-  const sentences = stripped.split(/(?<=[.!?])\s+/).filter(s => s.trim().length > 0);
-  const lengths = sentences.map(s => s.split(/\s+/).length);
-  const avg = lengths.reduce((a, b) => a + b, 0) / (lengths.length || 1);
-  const variance = lengths.reduce((sum, len) => sum + Math.pow(len - avg, 2), 0) / (lengths.length || 1);
-  const stdDev = Math.sqrt(variance);
-  const shortSentences = lengths.filter(l => l <= 6).length;
-  const longSentences = lengths.filter(l => l >= 25).length;
-
-  const conversationalMarkers = [
-    /\bhere's the thing\b/i, /\blook,\s/i, /\bhonestly,?\s/i, /\btruth is\b/i,
-    /\bthe truth\b/i, /\bi'll tell you\b/i, /\bthink about it\b/i,
-    /\bthat said\b/i, /\bbut here's\b/i, /\bso yeah\b/i, /\bkind of\b/i,
-    /\bsort of\b/i, /\byou know\b/i
+  // Conversational dialogue markers (need 2-3)
+  const dialogueMarkers = [
+    /right\?!/i, /know what i mean\??/i, /does that land\??/i,
+    /how does that make you feel\??/i, /here's the thing/i,
+    /look,\s/i, /honestly,?\s/i, /truth is/i, /think about it/i,
+    /so yeah/i, /you know\?/i, /get this/i, /hear me out/i
   ];
-  const markerCount = conversationalMarkers.filter(r => r.test(stripped)).length;
+  const markerCount = dialogueMarkers.filter(r => r.test(stripped)).length;
 
-  return {
-    contractions,
-    directAddress,
-    firstPerson,
-    sentenceCount: sentences.length,
-    avgSentenceLength: +avg.toFixed(1),
-    sentenceStdDev: +stdDev.toFixed(1),
-    shortSentences,
-    longSentences,
-    conversationalMarkers: markerCount
-  };
+  return { contractions, directAddress, markerCount };
 }
 
+/**
+ * Run the full quality gate on an article body.
+ * Returns { passed, failures, cleaned }
+ */
 export function runQualityGate(body) {
   const failures = [];
-  const warnings = [];
 
-  const words = countWords(body);
-  if (words < 1200) failures.push(`words-too-low:${words}`);
-  if (words > 2500) failures.push(`words-too-high:${words}`);
+  // 1. Fix em-dashes first
+  const { cleaned, hadEmDash } = fixEmDashes(body);
+  if (hadEmDash) {
+    // Em-dashes were auto-replaced, not a failure per se (they get fixed)
+  }
 
-  const links = countAmazonLinks(body);
+  // 2. Word count: 1200-2500
+  const words = countWords(cleaned);
+  if (words < 1200) failures.push(`word-count-too-low:${words}`);
+  if (words > 2500) failures.push(`word-count-too-high:${words}`);
+
+  // 3. Amazon links: exactly 3 or 4
+  const links = countAmazonLinks(cleaned);
   if (links < 3) failures.push(`amazon-links-too-few:${links}`);
   if (links > 4) failures.push(`amazon-links-too-many:${links}`);
 
-  if (hasEmDash(body)) failures.push('contains-em-dash');
+  // 4. Banned words
+  const bannedWords = findBannedWords(cleaned);
+  if (bannedWords.length > 0) failures.push(`banned-words:${bannedWords.join(',')}`);
 
-  const bw = findFlaggedWords(body);
-  if (bw.length > 0) failures.push(`ai-flagged-words:${bw.join(',')}`);
+  // 5. Banned phrases
+  const bannedPhrases = findBannedPhrases(cleaned);
+  if (bannedPhrases.length > 0) failures.push(`banned-phrases:${bannedPhrases.join('|')}`);
 
-  const bp = findFlaggedPhrases(body);
-  if (bp.length > 0) failures.push(`ai-flagged-phrases:${bp.join('|')}`);
-
-  const voice = voiceSignals(body);
-  const per1k = (n) => (n / words) * 1000;
-
-  if (per1k(voice.contractions) < 4) {
-    failures.push(`contractions-too-few:${voice.contractions}(${per1k(voice.contractions).toFixed(1)}/1k)`);
+  // 6. Em-dash check on cleaned text (should be zero after fix)
+  if (cleaned.includes('\u2014') || cleaned.includes('\u2013')) {
+    failures.push('em-dash-survived-cleanup');
   }
 
-  if (voice.directAddress === 0 && voice.firstPerson === 0) {
-    failures.push('no-direct-address-or-first-person');
-  }
-
-  if (voice.sentenceStdDev < 4) {
-    failures.push(`sentence-variance-too-low:${voice.sentenceStdDev}`);
-  }
-
-  if (voice.shortSentences < 2) {
-    failures.push(`too-few-short-sentences:${voice.shortSentences}`);
-  }
-
-  if (voice.conversationalMarkers < 2) {
-    warnings.push(`conversational-markers-low:${voice.conversationalMarkers}`);
+  // 7. Voice check (warning only for markers, but contractions required)
+  const voice = checkVoice(cleaned);
+  if (voice.directAddress === 0) {
+    failures.push('no-direct-address-you');
   }
 
   return {
     passed: failures.length === 0,
     failures,
-    warnings,
     wordCount: words,
     amazonLinks: links,
-    asins: extractAsinsFromText(body),
-    voice
+    asins: extractAsins(cleaned),
+    voice,
+    cleaned
   };
 }

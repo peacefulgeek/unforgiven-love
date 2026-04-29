@@ -95,7 +95,7 @@ function loadArticles() {
 
 function filterPublished(articles) {
   const now = new Date();
-  return articles.filter(a => new Date(a.dateISO) <= now);
+  return articles.filter(a => a.status === 'published' && new Date(a.dateISO) <= now);
 }
 
 function getArticles() {
